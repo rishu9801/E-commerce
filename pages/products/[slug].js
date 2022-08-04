@@ -6,21 +6,19 @@ const Slug = () => {
   const { slug } = router.query;
   const [pin, setPin] = useState();
   const [serviceable, setServiceable] = useState(null);
-  const checkPinServiceability = async (pincode) => {
-    console.log("test");
-    const pins = await (
-      await fetch("http://localhost:3000/api/pincode")
-    ).json();
-    if (pins.includes(pincode)) {
+  const checkPinServiceability = async () => {
+    const pins = await fetch("http://localhost:3000/api/pincode");
+    const pinsJson = await pins.json();
+    if (pinsJson.includes(parseInt(pin))) {
       setServiceable(true);
-      console.log(pins);
+    } else {
+      setServiceable(false);
     }
   };
-  checkPinServiceability("800004");
   return (
     <>
       <section className="text-gray-600 body-font overflow-hidden">
-        <div className="container px-5 py-24 mx-auto">
+        <div className="container px-5 mx-auto">
           <div className="lg:w-4/5 mx-auto flex flex-wrap">
             <img
               alt="ecommerce"
@@ -191,6 +189,41 @@ const Slug = () => {
                     <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"></path>
                   </svg>
                 </button>
+              </div>
+              <div className="flex">
+                <div className="mb-6">
+                  <label className="block mb-2 text-sm font-medium">
+                    Check Pincode Serviceability
+                  </label>
+                  <input
+                    type="text"
+                    id="username-success"
+                    className={
+                      "p-2 border text-sm rounded-lg w-full" +
+                      (serviceable
+                        ? " border-green-800 bg-green-300 focus:ring-green-800 focus:border-green-800"
+                        : " border-red-700 bg-red-300")
+                    }
+                    placeholder="Enter Pincode"
+                    onChange={(e) => {
+                      setPin(e.target.value);
+                    }}
+                  />
+                  {serviceable && serviceable != null && (
+                    <p className="text-green-600 dark:text-green-500 text-xs mt-1">
+                      <span className="font-semibold mr-1">Hurray!</span>Your
+                      Pincode is covered.
+                    </p>
+                  )}
+
+                  {!serviceable && serviceable != null && (
+                    <p className="text-red-600 dark:text-red-500 text-xs mt-1">
+                      <span className="font-semibold mr-1">Sorry!</span>Your
+                      Pincode will be covered soon.
+                    </p>
+                  )}
+                  <button onClick={checkPinServiceability}>Check</button>
+                </div>
               </div>
             </div>
           </div>

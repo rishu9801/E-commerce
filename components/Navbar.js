@@ -71,7 +71,7 @@ const Navbar = () => {
                 className="text-xs text-purple-800 bg-white py-1 px-3 rounded flex items-center justify-between"
               >
                 <AiOutlineShoppingCart />
-                Cart
+                Clear Cart
               </button>
               <button
                 type="button"
