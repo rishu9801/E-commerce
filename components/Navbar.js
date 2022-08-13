@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import { RiShoppingBagLine } from "react-icons/ri";
 import { MdOutlineCancel } from "react-icons/md";
-const Navbar = () => {
+import Link from "next/link";
+const Navbar = ({ cart, addToCart, removeFromCart, clearCart, subTotal }) => {
   const [cartModalStatus, setCartModalStatus] = useState(false);
   return (
     <header className="text-gray-600 body-font">
@@ -28,13 +29,16 @@ const Navbar = () => {
           <a className="mr-5 hover:text-gray-900">Third Link</a>
           <a className="mr-5 hover:text-gray-900">Fourth Link</a>
         </nav>
+        <Link href="/login">
+          <a>Login</a>
+        </Link>
         <button
           className="inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0"
           onClick={() => {
             setCartModalStatus(!cartModalStatus);
           }}
         >
-          Button
+          Cart
           <svg
             fill="none"
             stroke="currentColor"
@@ -59,27 +63,39 @@ const Navbar = () => {
                 <MdOutlineCancel />
               </button>
             </div>
+            {Object.keys(cart).length === 0 && (
+              <div className="my-3">No Items in your cart!!</div>
+            )}
             <ol className="pl-3">
-              <li className="text-xs flex align-middle">
-                Tshirt <span className="px-2">x</span>
-                <span>1</span>
-              </li>
+              {Object.keys(cart).map((item) => {
+                return (
+                  <li key={item} className="text-xs flex align-middle">
+                    {cart[item].name}
+                    <span className="px-2">x</span>
+                    <span>{cart[item].qty}</span>
+                  </li>
+                );
+              })}
             </ol>
+            <div>{subTotal}</div>
             <div className="flex justify-evenly py-3 border-t-2 border-white mt-3">
               <button
                 type="button"
                 className="text-xs text-purple-800 bg-white py-1 px-3 rounded flex items-center justify-between"
+                onClick={clearCart}
               >
                 <AiOutlineShoppingCart />
                 Clear Cart
               </button>
-              <button
-                type="button"
-                className="text-xs text-purple-800 bg-white py-1 px-3 rounded flex items-center justify-between"
-              >
-                <RiShoppingBagLine />
-                Checkout
-              </button>
+              <Link href={"/checkout"}>
+                <button
+                  type="button"
+                  className="text-xs text-purple-800 bg-white py-1 px-3 rounded flex items-center justify-between"
+                >
+                  <RiShoppingBagLine />
+                  Checkout
+                </button>
+              </Link>
             </div>
           </div>
         )}
