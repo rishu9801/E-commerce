@@ -73,8 +73,13 @@ const Navbar = ({ cart, addToCart, removeFromCart, clearCart, subTotal }) => {
             <ol className="pl-3">
               {Object.keys(cart).map((item) => {
                 return (
-                  <li key={item} className="text-xs flex align-middle mb-2">
-                    {cart[item].name}
+                  <li key={item} className="text-sm flex align-middle mb-2">
+                    <p className="text-sm">
+                      {cart[item].name}{" "}
+                      <span className="text-xs capitalize">
+                        ({cart[item].variant}/{cart[item].size})
+                      </span>
+                    </p>
                     <span className="px-2">x</span>
                     <span>{cart[item].qty}</span>
                   </li>

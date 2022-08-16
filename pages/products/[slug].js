@@ -21,8 +21,25 @@ const Slug = ({ addToCart, product, variants }) => {
   const [color, setColor] = useState(product.color);
   const [size, setSize] = useState(product.size);
 
-  const refreshVariant = (newColor, newSize) => {
-    console.log(variants[newColor][newSize]["slug"]);
+  const refreshVariantColor = (newColor, newSize) => {
+    Object.keys(variants[newColor]).map((item) => {
+      console.log(
+        item,
+        Object.keys(item),
+        Object.values(item),
+        item !== newSize
+      );
+      if (item !== newSize) {
+        newSize = item;
+      } else {
+        newSize = newSize;
+      }
+    });
+    let url = "/products/" + `${variants[newColor][newSize]["slug"]}`;
+    window.location = url;
+  };
+
+  const refreshVariantSize = (newColor, newSize) => {
     let url = "/products/" + `${variants[newColor][newSize]["slug"]}`;
     window.location = url;
   };
@@ -41,8 +58,8 @@ const Slug = ({ addToCart, product, variants }) => {
               <h2 className="text-sm title-font text-gray-500 tracking-widest">
                 BRAND NAME
               </h2>
-              <h1 className="text-gray-900 text-3xl title-font font-medium mb-1">
-                {product.title}
+              <h1 className="text-gray-900 text-3xl title-font font-medium mb-1 capitalize">
+                {product.title} {color + "/" + size}
               </h1>
               <div className="flex mb-4">
                 <span className="flex items-center">
@@ -154,26 +171,24 @@ const Slug = ({ addToCart, product, variants }) => {
                 <div className="flex">
                   <span className="mr-3">Color</span>
                   {Object.keys(variants).map((item, i) => {
-                    if (Object.keys(variants[item]).includes(size)) {
-                      return (
-                        <button
-                          key={i}
-                          onClick={(e) => {
-                            refreshVariant(item, size);
-                          }}
-                          className={
-                            "border-2 ml-1 " +
-                            "border-" +
-                            `${item}` +
-                            "-300 " +
-                            "bg-" +
-                            `${item}` +
-                            "-500 " +
-                            "rounded-full w-6 h-6 focus:outline-none"
-                          }
-                        ></button>
-                      );
-                    }
+                    return (
+                      <button
+                        key={i}
+                        onClick={(e) => {
+                          refreshVariantColor(item, size);
+                        }}
+                        className={
+                          "border-2 ml-1 " +
+                          "border-" +
+                          `${item}` +
+                          "-300 " +
+                          "bg-" +
+                          `${item}` +
+                          "-500 " +
+                          "rounded-full w-6 h-6 focus:outline-none"
+                        }
+                      ></button>
+                    );
                   })}
                 </div>
                 <div className="flex ml-6 items-center">
@@ -182,24 +197,15 @@ const Slug = ({ addToCart, product, variants }) => {
                     <select
                       value={size}
                       onChange={(e) => {
-                        refreshVariant(color, e.target.value);
+                        refreshVariantSize(color, e.target.value);
                       }}
                       className="rounded border appearance-none border-gray-300 py-2 focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-500 text-base pl-3 pr-10"
                     >
-                      {Object.keys(variants).map((item, index) => {
-                        console.log(item, "color");
-                        Object.keys(variants[item]).map((i, index) => {
-                          console.log(i, "item from size");
-                          return <option key={index}>L</option>;
-                        });
-                        return <option key={index}>{}</option>;
-                      })}
-
-                      {/* {Object.keys(variants[product.color]).map(
+                      {Object.keys(variants[product.color]).map(
                         (item, index) => {
                           return <option key={index}>{item}</option>;
                         }
-                      )} */}
+                      )}
                     </select>
                     <span className="absolute right-0 top-0 h-full w-10 text-center text-gray-600 pointer-events-none flex items-center justify-center">
                       <svg
