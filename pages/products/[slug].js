@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import { useRouter } from "next/router";
+import mongoose from "mongoose";
+import Product from "../../models/Product";
 
-const Slug = ({ cart, addToCart, removeFromCart, clearCart, subTotal }) => {
+const Slug = ({ addToCart, product, variants }) => {
   const router = useRouter();
   const { slug } = router.query;
+
   const [pin, setPin] = useState();
   const [serviceable, setServiceable] = useState(null);
   const checkPinServiceability = async () => {
@@ -15,6 +18,9 @@ const Slug = ({ cart, addToCart, removeFromCart, clearCart, subTotal }) => {
       setServiceable(false);
     }
   };
+  console.table(variants);
+  const [color, setColor] = useState(product.color);
+  const [size, setSize] = useState(product.size);
   return (
     <>
       <section className="text-gray-600 body-font overflow-hidden">
@@ -23,14 +29,14 @@ const Slug = ({ cart, addToCart, removeFromCart, clearCart, subTotal }) => {
             <img
               alt="ecommerce"
               className="lg:w-1/2 w-full lg:h-auto h-64 object-cover object-center rounded"
-              src="https://dummyimage.com/400x400"
+              src={product.img}
             />
             <div className="lg:w-1/2 w-full lg:pl-10 lg:py-6 mt-6 lg:mt-0">
               <h2 className="text-sm title-font text-gray-500 tracking-widest">
                 BRAND NAME
               </h2>
               <h1 className="text-gray-900 text-3xl title-font font-medium mb-1">
-                The Catcher in the Rye
+                {product.title}
               </h1>
               <div className="flex mb-4">
                 <span className="flex items-center">
@@ -141,18 +147,41 @@ const Slug = ({ cart, addToCart, removeFromCart, clearCart, subTotal }) => {
               <div className="flex mt-6 items-center pb-5 border-b-2 border-gray-100 mb-5">
                 <div className="flex">
                   <span className="mr-3">Color</span>
-                  <button className="border-2 border-gray-300 rounded-full w-6 h-6 focus:outline-none"></button>
-                  <button className="border-2 border-gray-300 ml-1 bg-gray-700 rounded-full w-6 h-6 focus:outline-none"></button>
-                  <button className="border-2 border-gray-300 ml-1 bg-purple-500 rounded-full w-6 h-6 focus:outline-none"></button>
+                  {Object.keys(variants).map((item, i) => {
+                    if (Object.keys(variants[item]).includes(size)) {
+                      return (
+                        <button
+                          key={i}
+                          className={
+                            "border-2 ml-1 " +
+                            "border-" +
+                            `${item}` +
+                            "-300 " +
+                            "bg-" +
+                            `${item}` +
+                            "-700 " +
+                            "rounded-full w-6 h-6 focus:outline-none"
+                          }
+                        ></button>
+                      );
+                    }
+                  })}
                 </div>
                 <div className="flex ml-6 items-center">
                   <span className="mr-3">Size</span>
                   <div className="relative">
-                    <select className="rounded border appearance-none border-gray-300 py-2 focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-500 text-base pl-3 pr-10">
-                      <option>SM</option>
-                      <option>M</option>
-                      <option>L</option>
-                      <option>XL</option>
+                    <select
+                      value={size}
+                      onChange={(e) => {
+                        setSize(e.target.value);
+                      }}
+                      className="rounded border appearance-none border-gray-300 py-2 focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-500 text-base pl-3 pr-10"
+                    >
+                      {Object.keys(variants[product.color]).map(
+                        (item, index) => {
+                          return <option key={index}>{item}</option>;
+                        }
+                      )}
                     </select>
                     <span className="absolute right-0 top-0 h-full w-10 text-center text-gray-600 pointer-events-none flex items-center justify-center">
                       <svg
@@ -178,12 +207,12 @@ const Slug = ({ cart, addToCart, removeFromCart, clearCart, subTotal }) => {
                   className="flex ml-auto text-white bg-purple-500 border-0 py-2 px-6 focus:outline-none hover:bg-purple-600 rounded"
                   onClick={() => {
                     addToCart(
-                      slug,
+                      product.slug,
                       1,
-                      699,
-                      "Macbook Air(256gb,space-grey)",
-                      "256gb",
-                      "space-grey"
+                      product.price,
+                      product.title,
+                      product.size,
+                      product.color
                     );
                   }}
                 >
@@ -244,5 +273,27 @@ const Slug = ({ cart, addToCart, removeFromCart, clearCart, subTotal }) => {
     </>
   );
 };
+export async function getServerSideProps(context) {
+  if (!mongoose.connections[0].readyState) {
+    await mongoose.connect(process.env.MONGO_URI);
+  }
+  let product = await Product.findOne({ slug: context.query.slug });
+  let variants = await Product.find({ title: product.title });
+  let colorSizeSlug = {};
+  for (let item of variants) {
+    if (Object.keys(colorSizeSlug).includes(item.color)) {
+      colorSizeSlug[item.color][item.size] = { slug: item.slug };
+    } else {
+      colorSizeSlug[item.color] = {};
+      colorSizeSlug[item.color][item.size] = { slug: item.slug };
+    }
+  }
+  return {
+    props: {
+      product: JSON.parse(JSON.stringify(product)),
+      variants: JSON.parse(JSON.stringify(colorSizeSlug)),
+    },
+  };
+}
 
 export default Slug;

@@ -69,7 +69,7 @@ const Navbar = ({ cart, addToCart, removeFromCart, clearCart, subTotal }) => {
             <ol className="pl-3">
               {Object.keys(cart).map((item) => {
                 return (
-                  <li key={item} className="text-xs flex align-middle">
+                  <li key={item} className="text-xs flex align-middle mb-2">
                     {cart[item].name}
                     <span className="px-2">x</span>
                     <span>{cart[item].qty}</span>
