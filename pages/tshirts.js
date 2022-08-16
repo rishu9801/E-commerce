@@ -48,21 +48,19 @@ const Tshirt = ({ products }) => {
                         <div className="flex">
                           {products[product].color.map((i, index) => {
                             return (
-                              <div
+                              <button
+                                key={index}
                                 className={
-                                  "rounded-full w-max p-2 " +
+                                  "border-2 ml-1 " +
+                                  "border-" +
+                                  `${i}` +
+                                  "-300 " +
                                   "bg-" +
                                   `${i}` +
-                                  "-200 " +
-                                  "text-" +
-                                  `${i}` +
-                                  "-700"
+                                  "-500 " +
+                                  "rounded-full w-6 h-6 focus:outline-none"
                                 }
-                                key={index}
-                              >
-                                {" "}
-                                {i}
-                              </div>
+                              ></button>
                             );
                           })}
                         </div>

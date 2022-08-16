@@ -18,9 +18,15 @@ const Slug = ({ addToCart, product, variants }) => {
       setServiceable(false);
     }
   };
-  console.table(variants);
   const [color, setColor] = useState(product.color);
   const [size, setSize] = useState(product.size);
+
+  const refreshVariant = (newColor, newSize) => {
+    console.log(variants[newColor][newSize]["slug"]);
+    let url = "/products/" + `${variants[newColor][newSize]["slug"]}`;
+    window.location = url;
+  };
+
   return (
     <>
       <section className="text-gray-600 body-font overflow-hidden">
@@ -152,6 +158,9 @@ const Slug = ({ addToCart, product, variants }) => {
                       return (
                         <button
                           key={i}
+                          onClick={(e) => {
+                            refreshVariant(item, size);
+                          }}
                           className={
                             "border-2 ml-1 " +
                             "border-" +
@@ -159,7 +168,7 @@ const Slug = ({ addToCart, product, variants }) => {
                             "-300 " +
                             "bg-" +
                             `${item}` +
-                            "-700 " +
+                            "-500 " +
                             "rounded-full w-6 h-6 focus:outline-none"
                           }
                         ></button>
@@ -173,15 +182,24 @@ const Slug = ({ addToCart, product, variants }) => {
                     <select
                       value={size}
                       onChange={(e) => {
-                        setSize(e.target.value);
+                        refreshVariant(color, e.target.value);
                       }}
                       className="rounded border appearance-none border-gray-300 py-2 focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-500 text-base pl-3 pr-10"
                     >
-                      {Object.keys(variants[product.color]).map(
+                      {Object.keys(variants).map((item, index) => {
+                        console.log(item, "color");
+                        Object.keys(variants[item]).map((i, index) => {
+                          console.log(i, "item from size");
+                          return <option key={index}>L</option>;
+                        });
+                        return <option key={index}>{}</option>;
+                      })}
+
+                      {/* {Object.keys(variants[product.color]).map(
                         (item, index) => {
                           return <option key={index}>{item}</option>;
                         }
-                      )}
+                      )} */}
                     </select>
                     <span className="absolute right-0 top-0 h-full w-10 text-center text-gray-600 pointer-events-none flex items-center justify-center">
                       <svg
