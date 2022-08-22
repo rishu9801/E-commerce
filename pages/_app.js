@@ -1,13 +1,23 @@
+import { useRouter } from "next/router";
 import React, { useState, useEffect } from "react";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
+import LoadingBar from "react-top-loading-bar";
 import "../styles/globals.css";
 
 function MyApp({ Component, pageProps }) {
+  const router = useRouter();
   const [cart, setCart] = useState({});
   const [subTotal, setSubTotal] = useState(0);
+  const [user, setUser] = useState({ value: null });
+  const [progress, setProgress] = useState(0);
   useEffect(() => {
-    console.log("test use effect");
+    router.events.on("routeChangeStart", () => {
+      setProgress(40);
+    });
+    router.events.on("routeChangeComplete", () => {
+      setProgress(100);
+    });
     try {
       if (localStorage.getItem("cart")) {
         setCart(JSON.parse(localStorage.getItem("cart")));
@@ -16,7 +26,11 @@ function MyApp({ Component, pageProps }) {
       console.error(error);
       localStorage.clear();
     }
-  }, []);
+    let localUser = localStorage.getItem("token");
+    if (localUser) {
+      setUser({ value: localUser });
+    }
+  }, [router.query]);
 
   const saveCart = (myCart) => {
     localStorage.setItem("cart", JSON.stringify(myCart));
@@ -57,9 +71,22 @@ function MyApp({ Component, pageProps }) {
     saveCart(myCart);
   };
 
+  const buyNow = (itemCode, qty, price, name, size, variant) => {
+    let newCart = { itemCode: { qty: 1, price, name, size, variant } };
+    setCart(newCart);
+    saveCart(newCart);
+    router.push("/checkout");
+  };
   return (
     <>
+      <LoadingBar
+        color="#f11946"
+        progress={progress}
+        waitingTime={400}
+        onLoaderFinished={() => setProgress(0)}
+      />
       <Navbar
+        user={user}
         cart={cart}
         addToCart={addToCart}
         removeFromCart={removeFromCart}
@@ -67,6 +94,7 @@ function MyApp({ Component, pageProps }) {
         subTotal={subTotal}
       />
       <Component
+        buyNow={buyNow}
         cart={cart}
         addToCart={addToCart}
         removeFromCart={removeFromCart}

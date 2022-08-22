@@ -2,7 +2,6 @@ import React from "react";
 import Link from "next/link";
 import mongoose from "mongoose";
 import Product from "../models/Product";
-import connectDb from "../middleware/mongoose";
 
 const Tshirt = ({ products }) => {
   console.log(products);
@@ -23,13 +22,13 @@ const Tshirt = ({ products }) => {
                       <a className="block relative h-72 rounded overflow-hidden">
                         <img
                           alt="ecommerce"
-                          className="object-cover object-center w-full h-full block"
+                          className="object-contain object-center w-full h-full block"
                           src={products[product].img}
                         />
                       </a>
                       <div className="mt-4">
-                        <h3 className="text-gray-500 text-xs tracking-widest title-font mb-1">
-                          CATEGORY
+                        <h3 className="text-gray-500 text-xs tracking-widest title-font mb-1 uppercase">
+                          {products[product].category}
                         </h3>
                         <h2 className="text-gray-900 title-font text-lg font-medium">
                           {products[product].title}
@@ -80,7 +79,7 @@ export async function getServerSideProps(context) {
   if (!mongoose.connections[0].readyState) {
     await mongoose.connect(process.env.MONGO_URI);
   }
-  let products = await Product.find();
+  let products = await Product.find({ category: "mens-clothing" });
   let tshirts = {};
   for (let item of products) {
     if (item.title in tshirts) {

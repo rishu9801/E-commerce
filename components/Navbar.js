@@ -1,13 +1,58 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import { RiShoppingBagLine } from "react-icons/ri";
 import { MdOutlineCancel } from "react-icons/md";
+import { Menu } from "primereact/menu";
+import { Button } from "primereact/button";
+import { Toast } from "primereact/toast";
+import "primereact/resources/themes/lara-light-indigo/theme.css"; //theme
+import "primereact/resources/primereact.min.css"; //core css
+import "primeicons/primeicons.css";
+import { useRouter } from "next/router";
+
 import Link from "next/link";
-const Navbar = ({ cart, addToCart, removeFromCart, clearCart, subTotal }) => {
+const Navbar = ({
+  user,
+  cart,
+  addToCart,
+  removeFromCart,
+  clearCart,
+  subTotal,
+}) => {
   const [cartModalStatus, setCartModalStatus] = useState(false);
+  const router = useRouter();
+  const menu = useRef(null);
+  const toast = useRef(null);
+  const items = [
+    {
+      label: "Options",
+      items: [
+        {
+          label: "My Account",
+          icon: "pi pi-user",
+        },
+        {
+          label: "My Orders",
+          icon: "pi pi-shopping-cart",
+          command: () => {
+            router.push("/orders");
+          },
+        },
+        {
+          label: "Logout",
+          icon: "pi pi-times",
+          command: () => {
+            localStorage.removeItem("token");
+            router.reload();
+          },
+        },
+      ],
+    },
+  ];
   return (
     <header className="text-gray-600 body-font">
       <div className="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
+        <Toast ref={toast}></Toast>
         <Link href={"/"}>
           <a className="flex title-font font-medium items-center text-gray-900 mb-4 md:mb-0">
             <svg
@@ -33,9 +78,23 @@ const Navbar = ({ cart, addToCart, removeFromCart, clearCart, subTotal }) => {
           <a className="mr-5 hover:text-gray-900">Third Link</a>
           <a className="mr-5 hover:text-gray-900">Fourth Link</a>
         </nav>
-        <Link href="/login">
-          <a>Login</a>
-        </Link>
+        {!user.value && (
+          <Link href="/login">
+            <a>Login</a>
+          </Link>
+        )}
+        {user.value && (
+          <div className="card">
+            <Menu model={items} popup ref={menu} id="popup_menu"></Menu>
+            <Button
+              onClick={(event) => menu.current.toggle(event)}
+              aria-controls="popup_menu"
+              aria-haspopup
+              icon="pi pi-user"
+              className="p-0"
+            ></Button>
+          </div>
+        )}
         <button
           className="inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0"
           onClick={() => {

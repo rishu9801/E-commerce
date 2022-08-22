@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import mongoose from "mongoose";
 import Product from "../../models/Product";
 
-const Slug = ({ addToCart, product, variants }) => {
+const Slug = ({ addToCart, product, variants, buyNow }) => {
   const router = useRouter();
   const { slug } = router.query;
 
@@ -51,8 +51,9 @@ const Slug = ({ addToCart, product, variants }) => {
           <div className="lg:w-4/5 mx-auto flex flex-wrap">
             <img
               alt="ecommerce"
-              className="lg:w-1/2 w-full lg:h-auto h-64 object-cover object-center rounded"
+              className="lg:w-1/2 w-full  object-contain object-top rounded"
               src={product.img}
+              style={{ height: "500px" }}
             />
             <div className="lg:w-1/2 w-full lg:pl-10 lg:py-6 mt-6 lg:mt-0">
               <h2 className="text-sm title-font text-gray-500 tracking-widest">
@@ -224,38 +225,6 @@ const Slug = ({ addToCart, product, variants }) => {
                 </div>
               </div>
               <div className="flex">
-                <span className="title-font font-medium text-2xl text-gray-900">
-                  $58.00
-                </span>
-                <button
-                  className="flex ml-auto text-white bg-purple-500 border-0 py-2 px-6 focus:outline-none hover:bg-purple-600 rounded"
-                  onClick={() => {
-                    addToCart(
-                      product.slug,
-                      1,
-                      product.price,
-                      product.title,
-                      product.size,
-                      product.color
-                    );
-                  }}
-                >
-                  Add to Cart
-                </button>
-                <button className="rounded-full w-10 h-10 bg-gray-200 p-0 border-0 inline-flex items-center justify-center text-gray-500 ml-4">
-                  <svg
-                    fill="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    className="w-5 h-5"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"></path>
-                  </svg>
-                </button>
-              </div>
-              <div className="flex">
                 <div className="mb-6">
                   <label className="block mb-2 text-sm font-medium">
                     Check Pincode Serviceability
@@ -288,6 +257,55 @@ const Slug = ({ addToCart, product, variants }) => {
                     </p>
                   )}
                   <button onClick={checkPinServiceability}>Check</button>
+                </div>
+              </div>
+              <div className="flex justify-between">
+                <span className="title-font font-medium text-2xl text-gray-900">
+                  $58.00
+                </span>
+                <div className="flex">
+                  <button
+                    className="flex ml-auto mr-4 text-white bg-purple-500 border-0 py-2 px-6 focus:outline-none hover:bg-purple-600 rounded"
+                    onClick={() => {
+                      buyNow(
+                        product.slug,
+                        1,
+                        product.price,
+                        product.title,
+                        product.size,
+                        product.color
+                      );
+                    }}
+                  >
+                    Buy Now
+                  </button>
+                  <button
+                    className="flex ml-auto text-white bg-purple-500 border-0 py-2 px-6 focus:outline-none hover:bg-purple-600 rounded"
+                    onClick={() => {
+                      addToCart(
+                        product.slug,
+                        1,
+                        product.price,
+                        product.title,
+                        product.size,
+                        product.color
+                      );
+                    }}
+                  >
+                    Add to Cart
+                  </button>
+                  <button className="rounded-full w-10 h-10 bg-gray-200 p-0 border-0 inline-flex items-center justify-center text-gray-500 ml-4">
+                    <svg
+                      fill="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      className="w-5 h-5"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"></path>
+                    </svg>
+                  </button>
                 </div>
               </div>
             </div>
