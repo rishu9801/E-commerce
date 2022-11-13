@@ -51,6 +51,7 @@ function MyApp({ Component, pageProps }) {
     }
     setCart(newCart);
     saveCart(newCart);
+    console.log(newCart);
   };
 
   const clearCart = () => {

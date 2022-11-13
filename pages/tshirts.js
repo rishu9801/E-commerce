@@ -77,7 +77,7 @@ const Tshirt = ({ products }) => {
 
 export async function getServerSideProps(context) {
   if (!mongoose.connections[0].readyState) {
-    await mongoose.connect(process.env.MONGO_URI);
+    await mongoose.connect("mongodb://localhost:27017");
   }
   let products = await Product.find({ category: "mens-clothing" });
   let tshirts = {};
